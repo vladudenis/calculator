@@ -1,0 +1,46 @@
+:root{
+    --yellow: #ffc600; 
+}
+
+html{
+    box-sizing: border-box; /*this allows us to add padding and borders without increasing the size of our elements*/
+}
+
+header{
+
+}
+
+.calculator{ /*position it in the middle of the page and give it a dark color*/
+    
+}
+
+.screen{ /*make it large enough to fit the present input and the last answer written in the upper left corner*/
+
+}
+
+.buttons-grid{
+    display: grid;
+    grid-template-columns: 100px 100px 100px 100px;
+    grid-gap: 10px;
+}
+
+.clear-del{
+    display: grid;
+    grid-template-columns: 200px 200px;
+    grid-gap: 10px;
+    margin-bottom: 10px;
+}
+
+.default-button{
+    height: 50px;
+    width: 100px;
+}
+
+.del-clear-btn{
+    height: 50px;
+    width: 220px;
+}
+
+footer{
+
+}
