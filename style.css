@@ -15,7 +15,7 @@ body{
 .calculator{
     width: 400px;
     height: 510px;
-    margin-top: 10%;
+    margin-top: 5%;
     padding: 20px;
     background-color: grey;
     border-radius: 10px;
@@ -44,6 +44,14 @@ button{
     font-size: 20px;
     border: 2px solid black;
     cursor: pointer;
+}
+
+button:hover{
+    background-color: lightgrey;
+}
+
+button:active{
+    background-color: darkgrey;
 }
 
 .del-clear-btn{
