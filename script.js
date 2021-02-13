@@ -1,11 +1,13 @@
-let op = "";
-let temp = 0;
+let op = "";  //operator: +, -, * or ÷
+let temp = 0; //temporary value, the number on the display that we store once an operatorBtn is pressed
+let screenRefresh = false; //false means append stuff; true means set new value
 
 const displayData = document.querySelector(".screen");
 const buttons = document.querySelectorAll("button");
 let buttonsArr = Array.from(buttons);
 buttonsArr.forEach(button => btnAddListener(button));
 
+//What button was pressed? What eventListener should we add to it?
 function btnAddListener(btn){
     if(btn.className == "number-btn"){
         btn.addEventListener("click", numberBtn);
@@ -28,46 +30,68 @@ function btnAddListener(btn){
 }
 
 function numberBtn(e){
-    if((op == "" && displayData.textContent != 0) || displayData.textContent.includes(".")){
-        displayData.textContent += e.target.textContent;
+    if(screenRefresh && op == ""){ //set new first number to input, including first number after an evaluation has already taken place
+        displayData.textContent = e.target.textContent;
+        screenRefresh = false;
     }
-    else{
-       displayData.textContent = e.target.textContent;
-    } 
+    else if(screenRefresh && op != ""){ //set first number after operatorBtn was pressed
+        displayData.textContent = e.target.textContent;
+        screenRefresh = false;
+    }
+    else if(!screenRefresh && op == ""){ //append numbers until operatorBtn is pressed
+        if(displayData.textContent != 0 || displayData.textContent.includes(".")){
+            displayData.textContent += e.target.textContent;
+        }
+        else{
+            displayData.textContent = e.target.textContent;
+        }
+    }
+    else if(!screenRefresh && op != ""){ //append numbers until evalBtn is pressed
+        if(displayData.textContent != 0 || displayData.textContent.includes(".")){
+            displayData.textContent += e.target.textContent;
+        }
+    }
 }
 
 function operatorBtn(e){
     if(op == ""){
-        op = String(e.target.textContent);
-        temp = displayData.textContent;
+        op = String(e.target.textContent); //set new operator
+        temp = displayData.textContent; //store number on screen as a temporary value
+        screenRefresh = true; //ensure the next number typed in sets a new value
     }
 }
 
-function dotBtn(e){
+function dotBtn(e){ //allow decimal input
     if(!displayData.textContent.includes(".")){
         displayData.textContent += e.target.textContent;
     }
 }
 
 function evalBtn(e){
-    if(op != ""){
+    if(op != "" && !screenRefresh){
         displayData.textContent = operate(op, temp, displayData.textContent);
+        op = ""; //reset op
+        temp = 0; //reset temp
+        screenRefresh = true; //ensure the next number typed in sets a new value
+    }
+    else{ //no evaluation if there's only a temp value and an op but no second number to do an operation with
+        displayData.textContent = "Error";
         op = "";
         temp = 0;
+        screenRefresh = true;
     }
 }
 
-function clearBtn(){
+function clearBtn(){ //clear display and reset all values
     displayData.textContent = 0;
     op = "";
     temp = 0;
 }
 
-function deleteBtn(){
+function deleteBtn(){ //delete a number from the back
     displayData.textContent =  displayData.textContent.toString().slice(0, -1);
 }
 
-//change these to make sure they also work with decimals
 function operate(operator, a, b){
     a = Number(a);
     b = Number(b);

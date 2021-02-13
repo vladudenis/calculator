@@ -65,4 +65,13 @@ footer{
     height: 50px;
     text-align: center;
     border-top: 4px solid var(--yellow);
+    background-color: mistyrose;
+}
+
+@media only screen and (max-height: 700px){
+    footer{
+        width: 0px;
+        height: 0px;
+        border-top: 0px;
+    }
 }
