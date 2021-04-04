@@ -1,13 +1,13 @@
-let op = "";  //operator: +, -, * or ÷
-let temp = 0; //temporary value, the number on the display that we store once an operatorBtn is pressed
-let screenRefresh = false; //false means append stuff; true means set new value
+let op = ""; //operator currently in calculator cache
+let temp = 0; // temporary value, the number on the display that we store when an operatorBtn is pressed
+let appendNumber = false; //true means we set a new value, false means we append on the value
+let chainOperation = false; //for chain operations, like 2 + 6 * 8 / 3 - 22
 
 const displayData = document.querySelector(".screen");
 const buttons = document.querySelectorAll("button");
-let buttonsArr = Array.from(buttons);
-buttonsArr.forEach(button => btnAddListener(button));
+buttons.forEach(button => btnAddListener(button));
 
-//What button was pressed? What eventListener should we add to it?
+//Check what button was pressed and add the appropriate event listener to it
 function btnAddListener(btn){
     if(btn.className == "number-btn"){
         btn.addEventListener("click", numberBtn);
@@ -30,55 +30,74 @@ function btnAddListener(btn){
 }
 
 function numberBtn(e){
-    if(screenRefresh && op == ""){ //set new first number to input, including first number after an evaluation has already taken place
+    //case: first button pressed when loading page or immediately after an evaluation has taken place
+    if(appendNumber == false && op == ""){
         displayData.textContent = e.target.textContent;
-        screenRefresh = false;
+        appendNumber = true; //now we must append any number we press
     }
-    else if(screenRefresh && op != ""){ //set first number after operatorBtn was pressed
+    //case: first button immediately pressed after the operator has been determined
+    else if(appendNumber == false && op != ""){
         displayData.textContent = e.target.textContent;
-        screenRefresh = false;
+        appendNumber = true;
+        chainOperation = true; //set to true just in case we actually do a chain operation
     }
-    else if(!screenRefresh && op == ""){ //append numbers until operatorBtn is pressed
+    //case: append numbers until an operator button is pressed
+    else if(appendNumber == true && op == ""){
         if(displayData.textContent != 0 || displayData.textContent.includes(".")){
             displayData.textContent += e.target.textContent;
-        }
-        else{
+        }else{
+            //if you press another number button after typing in 0, that new value will be set on the display screen
             displayData.textContent = e.target.textContent;
         }
     }
-    else if(!screenRefresh && op != ""){ //append numbers until evalBtn is pressed
+    //case: append numbers until the evaluation button is pressed
+    else if(appendNumber == true && op != ""){
+        chainOperation = false;
         if(displayData.textContent != 0 || displayData.textContent.includes(".")){
             displayData.textContent += e.target.textContent;
+        }else{
+            //if you press another number button after typing in 0, that new value will be set on the display screen
+            displayData.textContent = e.target.textContent;
         }
     }
 }
 
 function operatorBtn(e){
-    if(op == ""){
-        op = String(e.target.textContent); //set new operator
-        temp = displayData.textContent; //store number on screen as a temporary value
-        screenRefresh = true; //ensure the next number typed in sets a new value
+    if(op == "" || chainOperation == true){
+        if(chainOperation == true){
+            displayData.textContent = operate(op, temp, displayData.textContent);
+            temp = displayData.textContent;
+            op = e.target.textContent;
+            appendNumber = false;
+            chainOperation = false;
+        }else{
+            op = e.target.textContent; //set new operator
+            temp = displayData.textContent; //store number on screen as temporary value
+            appendNumber = false; //ensure next number typed in sets a new value
+        } 
     }
 }
 
-function dotBtn(e){ //allow decimal input
+function dotBtn(e){
     if(!displayData.textContent.includes(".")){
-        displayData.textContent += e.target.textContent;
+        displayData.textContent += e.target.textContent; //add dot
     }
 }
 
 function evalBtn(e){
-    if(op != "" && !screenRefresh){
-        displayData.textContent = operate(op, temp, displayData.textContent);
-        op = ""; //reset op
-        temp = 0; //reset temp
-        screenRefresh = true; //ensure the next number typed in sets a new value
+    if(chainOperation == true){
+        chainOperation = false;
     }
-    else{ //no evaluation if there's only a temp value and an op but no second number to do an operation with
+    if(appendNumber == true && op != ""){
+        displayData.textContent = operate(op, temp, displayData.textContent);
+        op = ""; //reset operator
+        temp = 0; //reset temp
+        appendNumber = false;
+    }else{ //no evaluation if there's only a temporary value and an operator but no second operand
         displayData.textContent = "Error";
         op = "";
         temp = 0;
-        screenRefresh = true;
+        appendNumber = false;
     }
 }
 
