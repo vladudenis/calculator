@@ -52,7 +52,6 @@ function numberBtn(e){
     }
     //case: append numbers until the evaluation button is pressed
     else if(appendNumber == true && op != ""){
-        chainOperation = false;
         if(displayData.textContent != 0 || displayData.textContent.includes(".")){
             displayData.textContent += e.target.textContent;
         }else{
@@ -108,7 +107,11 @@ function clearBtn(){ //clear display and reset all values
 }
 
 function deleteBtn(){ //delete a number from the back
-    displayData.textContent =  displayData.textContent.toString().slice(0, -1);
+    if(displayData.textContent.toString().length != 1){
+        displayData.textContent = displayData.textContent.toString().slice(0, -1);
+    }else{
+        displayData.textContent = 0;
+    }
 }
 
 function operate(operator, a, b){
